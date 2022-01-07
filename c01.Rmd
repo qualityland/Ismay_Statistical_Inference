@@ -1,0 +1,35 @@
+---
+title: "Chapter 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Explore first datasets
+
+What data frames are included in package *nycflights13*?
+
+```{r}
+library(nycflights13)
+ds <- data(package = "nycflights13")$results[, "Item"]
+```
+
+The included data frames are **`r ds`**.
+
+Let's take a closer look at the *flights* data frame.
+
+### Using `head()`
+
+```{r}
+head(flights)
+```
+
+### Using `dplyr::glimpse()`
+
+```{r}
+library(dplyr)
+glimpse(flights)
+```
+
