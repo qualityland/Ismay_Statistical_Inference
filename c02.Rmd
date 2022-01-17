@@ -111,3 +111,57 @@ ggplot(data = weather, mapping = aes(x = temp)) +
   facet_wrap(~ month, nrow = 4, labeller = month_names)
 ```
 
+
+## Boxplots
+
+```{r}
+ggplot(data = weather, mapping = aes(x = factor(month), y = temp)) +
+  geom_boxplot()
+```
+
+Which months have the highest variability in temperature?
+
+```{r}
+iqr <- weather %>% 
+  group_by(month) %>% 
+  summarise(IQR = IQR(temp, na.rm = TRUE)) %>% 
+  arrange(desc(IQR))
+
+knitr::kable(iqr)
+```
+
+
+## Barplots
+
+Which geom to use depends on how your data is represented.
+
+#### Raw data (not counted) - use `geom_bar()`
+
+```{r}
+fruits <- tibble(
+  fruit = c("apple", "apple", "orange", "apple", "orange")
+)
+fruits
+```
+
+```{r}
+ggplot(data = fruits, mapping = aes(x = fruit)) +
+  geom_bar()
+```
+
+
+#### Pre-counted data - use `geom_col()`
+```{r}
+fruits_counted <- tibble(
+  fruit = c("apple", "orange"),
+  n = c(3, 2)
+)
+fruits_counted
+```
+
+```{r}
+ggplot(data = fruits_counted, mapping = aes(x = fruit, y = n)) +
+  geom_col()
+
+```
+
