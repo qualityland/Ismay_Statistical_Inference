@@ -135,13 +135,15 @@ knitr::kable(iqr)
 
 Which geom to use depends on how your data is represented.
 
-#### Raw data (not counted) - use `geom_bar()`
+#### Raw data (not pre-counted): use `geom_bar()`
+
+Like categorical data in a column of a data frame.
 
 ```{r}
 fruits <- tibble(
   fruit = c("apple", "apple", "orange", "apple", "orange")
 )
-fruits
+knitr::kable(fruits)
 ```
 
 ```{r}
@@ -150,18 +152,69 @@ ggplot(data = fruits, mapping = aes(x = fruit)) +
 ```
 
 
-#### Pre-counted data - use `geom_col()`
+#### Pre-counted data: use `geom_col()`
+
+Here the fruit category and its count are in different columns.
+
 ```{r}
 fruits_counted <- tibble(
   fruit = c("apple", "orange"),
   n = c(3, 2)
 )
-fruits_counted
+knitr::kable(fruits_counted)
 ```
+
+Use `geom_col()` with the y-position aesthetic mapped to the variable that has
+the counts.
 
 ```{r}
 ggplot(data = fruits_counted, mapping = aes(x = fruit, y = n)) +
   geom_col()
 
+```
+
+#### Using `geom_bar()` to visualize the occurance of carriers
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier)) +
+  geom_bar()
+```
+
+
+#### To use `geom_col()` the occurance of each carrier first has to be counted
+
+```{r}
+carriers_counted <- flights %>%
+  count(carrier)
+knitr::kable(carriers_counted)
+```
+
+
+```{r}
+ggplot(data = carriers_counted, mapping = aes(x = carrier, y = n)) +
+  geom_col()
+```
+
+
+## Two categorical Variables
+
+An additional categorical variable can be displayed as fill color.
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier, fill = origin)) +
+  geom_bar()
+```
+
+
+
+## Pie Chart
+
+Usage is not recommended, since it is not easy to see differences.
+
+```{r}
+ggplot(data = carriers_counted, mapping = aes(x = "", y = n, fill = carrier)) +
+  geom_bar(stat="identity", width=1, color = "white") +
+  coord_polar("y", start=0) +
+  theme_void()
 ```
 
