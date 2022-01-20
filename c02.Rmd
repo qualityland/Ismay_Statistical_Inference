@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 #knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
@@ -200,9 +200,46 @@ ggplot(data = carriers_counted, mapping = aes(x = carrier, y = n)) +
 
 An additional categorical variable can be displayed as fill color.
 
+Since this is also an aesthetic mapping it has to be placed inside `aes()`.
+
 ```{r}
 ggplot(data = flights, mapping = aes(x = carrier, fill = origin)) +
   geom_bar()
+```
+
+**CAVE:** the `color` parameter only changes the outline color of bars.
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier, color = origin)) +
+  geom_bar()
+```
+
+
+## Side-by-side or *dodged* barplots
+
+Default barplots are `stacked`. Which makes it sometimes difficult compare
+values (e.g. for each `origin`).  An alternative are `dodged` barplots.
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier, fill = origin)) +
+  geom_bar(position = "dodge")
+```
+
+To make the bars same width, even if a carrier has only one or two origin
+airports we can use the more robust `position_dodge()` function.
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier, fill = origin)) +
+  geom_bar(position = position_dodge(preserve = "single"))
+```
+
+
+## Faceted Barplots
+
+```{r}
+ggplot(data = flights, mapping = aes(x = carrier)) +
+  geom_bar() +
+  facet_wrap(~ origin, ncol = 1)
 ```
 
 
