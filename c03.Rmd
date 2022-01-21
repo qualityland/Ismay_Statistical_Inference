@@ -1,0 +1,120 @@
+---
+title: "Chapter 3 - Data Wrangling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+## Important functions of the `dplyr` Package
+
+Most important `dplyr` functions are:
+
+* `filter()` - pick only a subset of the data (SQL **where clause**).
+* `summarize()` - run *summary statistics*.
+* `group_by()` - create sub-groups of your data; allowing summary statistics
+for each group.
+* `mutate()` - add variables/columns to the data frame.
+* `arrange()` - change order of the records (SQL **order by**)
+* `join()` - combine one data frame with another.
+
+
+```{r, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(nycflights13)
+```
+
+## Subset Observations / Rows with `filter()`
+
+```{r}
+portland_flights <- flights %>% 
+  filter(dest == "PDX")
+
+glimpse(portland_flights)
+```
+
+Filter flights for all rows that departed from JFK and were heading to Burlington, Vermont ("BTV") or Seattle, Washington ("SEA") and departed in the months of October, November, or December.
+
+```{r}
+btv_sea_flights_fall <- flights %>% 
+  filter(origin == "JFK" & (dest == "BTV" | dest == "SEA") & month > 9)
+
+dim(btv_sea_flights_fall)
+```
+
+Criteria can also be separated by commas:
+
+```{r}
+btv_sea_flights_fall <- flights %>% 
+  filter(origin == "JFK", (dest == "BTV" | dest == "SEA"), month > 9)
+
+dim(btv_sea_flights_fall)
+```
+
+### Use `%in% c()` for comparison with a vector
+
+```{r}
+many_airports <- flights %>% 
+  filter(dest %in% c("SEA", "SFO", "PDX", "BTV", "BDL"))
+
+dim(many_airports)
+```
+
+
+## `summarize()` Variables
+
+Compute *summary statistics* like:
+
+* `mean()`: the average
+* `sd()`: the standard deviation, which is a measure of spread
+* `min()` and `max()`: the minimum and maximum values, respectively
+* `IQR()`: interquartile range
+* `sum()`: the total amount when adding multiple numbers
+* `n()`: a count of the number of rows in each group
+
+```{r}
+summary_temp <- weather %>% 
+  summarize(mean = mean(temp), std_dev = sd(temp))
+
+knitr::kable(summary_temp)
+```
+
+Let's ignore missing values:
+
+```{r}
+summary_temp <- weather %>% 
+  summarize(
+    mean = mean(temp, na.rm = TRUE),
+    std_dev = sd(temp, na.rm = TRUE),
+    count = n())
+
+knitr::kable(summary_temp)
+```
+
+
+## `group_by()` rows
+
+Summarize temperature for every month:
+
+```{r}
+summary_monthly_temp <- weather %>% 
+  group_by(month) %>% 
+  summarize(    
+    mean = mean(temp, na.rm = TRUE),
+    std_dev = sd(temp, na.rm = TRUE),
+    count = n()) %>% 
+  mutate(month = month.name[month])
+
+knitr::kable(summary_monthly_temp)
+```
+
+Grouping does not change the data, but the meta data.
+Here diamonds grouped by *cut*:
+
+```{r}
+diamonds %>% 
+  group_by(cut)
+```
+
